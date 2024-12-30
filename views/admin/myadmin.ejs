@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Admin</title>
+
+        <!-- Bootstrap CSS -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <link href="/admin/sidebar.css" rel="stylesheet" type="text/css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+        <script src="/admin/sidebar.js"></script>
+        <script src="/admin/adminScrpt.js"></script>
+        <script src="/admin/trainingAdminScrpt.js"></script>
+    </head>
+
+    <body>
+
+         <!-- check alredy login -->
+     <input type="hidden" id="allredyloginuserID" value="<%=allredylogin%>">
+
+
+        <div id="sidebar-waper">
+            <div class="togle-btn" onclick="sidebartoggle()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="sidebar-menue">
+            <li class="Dashboard"><a href="../india/admin"> <i class="fa fa-dashboard" aria-hidden="true"></i><span> Dashboard</span></a></li>
+            <li class="Profile">
+              <a href="#ProfileSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                  <i class="fa fa-cogs"></i>
+                  <span>Menu</span>
+              </a>
+              <ul class="collapse " id="ProfileSubmenu">
+                  <li><a href="#" onclick="newChannelInit()">Add Chennal Partner</a></li>
+                  <li><a href="#" onclick="setStartUserid()">Set Start User ID</a></li>
+                  
+              </ul>
+            </li>
+            
+            <li onclick="addusdtrateinit()" class="ridedetails"><a href="#"> <span> USDT Update</span></a></li>
+            <li onclick="addupiinit()" class="gst"><a href="#"> <span> Add Upi</span></a></li>
+            <li onclick="activeupiinit()" class="gst"><a href="#"> <span> UPI Update</span></a></li>
+            <li onclick="fundRequest()" class="gst"><a href="#"> <span> Fund Request</span></a></li>
+
+            <li onclick="interestandCommissionInit()" class="addwallet"><a href="#"> <span>Interest and commision</span></a></li>
+            <li onclick="orderAmountModify()" class="modf"><a href="#"> <span>Modify Order Amount</span></a></li>
+            <li onclick="forgetpasswordInit()" class="ridedetails"><a href="#"> <span>Forget Password Request</span></a></li>
+            <li onclick="paymentInit()" class="ridedetails"><a href="#"> <span> Candidate Payment</span></a></li>
+
+            <li class="Profile">
+                <a href="#trainingSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fa fa-cogs"></i>
+                    <span>Training</span>
+                </a>
+                <ul class="collapse " id="trainingSubmenu">
+                    <li><a href="#" onclick="newtrainingChannelInit()">Add Chennal Partner</a></li>
+                    <li><a href="#" onclick="setTrainingStartUserid()">Set Start User ID</a></li>
+                    <li><a href="#" onclick="activationPinGenerate()">Generate Activation Pin</a></li>
+                    <li><a href="#" onclick="trforgetpasswordInit()">Forget Password</a></li>
+                    <!-- <li><a href="#" onclick="trainingFee()">Fee adjust</a></li> -->
+                    <li><a href="#" onclick="trainingWithdrawlRequiest()">Withdrawl</a></li>
+                    <li><a href="#" onclick="addFundCrack()">Add Fund</a></li>
+                    
+                </ul>
+              </li>
+            
+            
+            <li onclick="logout()" class="Logout"><a href="#"> <span> Logout</span></a></li>
+            </ul>
+        </div>
+
+        
+
+        <div id="login"  class="container-fluid p-2" style="margin-top: 10vh; " >
+                <div class="row mb-3">
+                  <div style="text-align: center; margin-top: 15vh;" class="col">
+                    <div style="font-size: 35px; font-weight:bold;">Log in</div>
+                    <span>Fill the form to Admin log in</span>
+                  </div>
+                </div>
+                <div class="card mb-3" style="background-color: #ccdbe6;">
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Email address</label>
+                      <input style=" text-decoration: none;"  type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label ">Password</label>
+                      <input type="password" class="form-control" id="password">
+                    </div>
+                  </div>
+                </div>
+                <!-- <p class="float-start">Register</p>
+                <p class="float-end">Forget Password</p> -->
+                <div class="fixed-bottom">
+                    <div class="container-fluid mb-3">
+                      <div  class="d-grid gap-2">
+                        <button onclick="login()" class="btn btn-primary " type="button">Login</button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+        <div id="main-content">  
+
+            
+         
+            
+            <!-- /// https://api.bscscan.com/api?module=transaction&action=gettxreceiptstatus&txhash=0xa1d05116646200f1da1a6f3bbf4986892fe5639d5bfa7e80cc9406b848a13556&apikey=TT6SKPMQQJENA6DZ2THAENJCAHGQCQYDDV
+
+            https://api.bscscan.com/api?module=account&action=txlistinternal&txhash=0xa1d05116646200f1da1a6f3bbf4986892fe5639d5bfa7e80cc9406b848a13556&apikey=TT6SKPMQQJENA6DZ2THAENJCAHGQCQYDDV
+            
+            
+            https://api.bscscan.com/api
+   ?module=contract
+   &action=getabi
+   &address=0x55d398326f99059fF775485246999027B3197955
+   &apikey=TT6SKPMQQJENA6DZ2THAENJCAHGQCQYDDV
+
+
+   /blockchain-data/binance-smart-chain/mainnet/transactions/{transactionHash}/tokens-transfers
+
+   https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=0x738Ca21F1Fb693C2dAB055446F82Dbc859044e86&page=1&offset=100&sort=desc&apikey=TT6SKPMQQJENA6DZ2THAENJCAHGQCQYDDV
+
+   https://stackoverflow.com/questions/67878356/how-to-get-bep20-token-transfer-details-in-python -->
+
+            <div style="margin-top: 1vh;" id="view">
+
+
+
+            </div>
+        
+
+        
+            <div  id="newChannel">
+                
+              
+                 
+
+            </div>
+
+            <div style="display: none;"  id="allUser">
+
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-success">Item 1</li>
+                    <li class="list-group-item">Item 2</li>
+                    <li class="list-group-item">Item 3</li>
+                </ul>
+
+            </div>
+            
+            <div style="display:none;"  id="forgetpassword">
+            
+            </div>
+
+            <!-- <div style="display: none;"  id="replaceID">
+                <div  class="col-xs-12 col-sm-12">
+                    <div class="panel panel-success">
+                          <div id="userListHeding" class="panel-heading">
+                                <h3 class="panel-title">Replace New ID with Old ID</h3>
+                          </div>
+                          <div class="panel-body">
+                            
+                            <div class="form-group" id="replacrDetails">
+                                <label for="inputOLD ID" class="col-sm-2 control-label">OLD ID:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="OLD ID" id="oldID" class="form-control" value="" required="required" pattern="" title="">
+                                </div>
+                                <div class="col-sm-10 col-sm-offset-2" style="margin-top: 5px;">
+                                    
+                                    <button onclick="getoldIDDetails()" type="button" class="btn btn-primary form-control">Submit</button>
+                                    
+                                </div>
+
+                                <label for="inputOLD ID" class="col-sm-2 control-label">Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="nameReplace" class="form-control" value="">
+                                </div>
+
+                                <label for="inputOLD ID" class="col-sm-2 control-label">email:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="emailReplace" class="form-control" value="">
+                                </div>
+
+                                <label for="inputOLD ID" class="col-sm-2 control-label">Mobile:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="mobileReplace" class="form-control" value="">
+                                </div>
+
+                                <label for="inputOLD ID" class="col-sm-2 control-label">Pan No:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="panReplace" class="form-control" value="">
+                                </div>
+
+                                <label for="inputOLD ID" class="col-sm-2 control-label">Address:</label>
+                                <div class="col-sm-10">
+                                    <textarea  id="addressReplace" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <div class="col-sm-10 col-sm-offset-2" style="margin-top: 5px;">
+                                    
+                                    <button onclick="oldtonewReplace()" type="button" class="btn btn-primary form-control">Replace</button>
+                                    
+                                </div> 
+                                
+                            </div>
+                            
+                            
+                            
+                          </div>
+                    </div>
+                </div>
+            
+            </div> -->
+
+
+
+
+
+        </div>
+
+    
+           
+           
+           
+           
+    
+       
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </body>
+</html>
