@@ -855,10 +855,11 @@ function newRegister(){
 
 ////////Check name//////
   const paa = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:paaAccount})
-  console.log(paa)
+  //console.log(paa)
 if(paa){
   var user=userName.trim();
   var paauser=paa.userName.trim();
+  console.log('UserName',user, "Paa UserName",paauser)
   if(paauser.toUpperCase() == user.toUpperCase()){
     $.post('/training/withdrawlProcid',{
       userID:userID,
