@@ -153,7 +153,8 @@ function setTrainingStartUserid(){
                             <option value="Due">Due</option>\
                         </select>\
                     </div>\
-                <button id="activeBtn" onclick="generatePin()" type="submit" class="btn btn-primary">Submit</button>\
+                <button id="activeBtn" onclick="generatePin()" type="submit" class="btn btn-primary">Generate Pin</button>\
+                <button id="activeBtn2" onclick="updateDue()" type="submit" class="btn btn-primary">Update Due</button>\
         </div>\
      </div>')
  }
@@ -183,6 +184,34 @@ function setTrainingStartUserid(){
     })
  }
 
+
+
+ function updateDue(){
+    var tutionFee= $("#feeAmount").val().trim();
+    var userID= $("#pinUserID").val().trim().toUpperCase();
+    var paymentType = $("#paymentType").val();
+   
+
+    if(Number(tutionFee) < 1500){
+        alert('Worng Tution Fee');
+        $("#feeAmount").focus()
+        return
+    } 
+
+    $.post('/admin/updateAmount',{userID:userID,tutionFee:tutionFee,paymentType},function(data){
+        if(data){
+            alert("Amount Update Successfully")
+        }else{
+            alert("worng User ID")
+            
+        }
+    })
+     
+       
+
+ }
+
+
  function trainingFee(){
     $.post('/admin/activationAmountAdjust',{},function(data){
         console.log(data);
@@ -190,6 +219,8 @@ function setTrainingStartUserid(){
     
  }
 
+
+ 
  
 
 

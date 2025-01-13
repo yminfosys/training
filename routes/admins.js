@@ -281,6 +281,39 @@ router.post('/createActivationKey', async function(req, res, next) {
 
 
 
+router.post('/updateAmount', async function(req, res, next) {
+  try {
+  await dbCon.connectDB()
+  const user= await db.traininguser.findOne({userID:req.body.userID});
+  await dbCon.closeDB();
+  if(user){
+    if(user.activationPin){
+      await dbCon.connectDB()
+      const user= await db.traininguser.findOneAndUpdate({userID:req.body.userID},{$set:{
+        activationAmt:req.body.tutionFee,
+        activationAmtBy:req.body.paymentType
+      }});
+      await dbCon.closeDB();
+
+      res.send("ok");
+    }else{
+      
+    }
+  }else{
+    res.send("worng userid")
+  }
+  
+  
+} catch (error) {
+  console.log(error);
+  return error;
+}
+
+})
+
+
+
+
 
 router.post('/activationAmountAdjust', async function(req, res, next) {
   try {
