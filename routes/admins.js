@@ -13,6 +13,8 @@ const saltRounds = 10;
 var componant = require('../component/lavelpayment');
 const { payment } = require('../component/lavelpayment');
 
+const moment=require('moment');
+
 /* GET home page. */
 
 
@@ -210,6 +212,25 @@ router.post('/trainingsetNewPasswordCalcel', async function(req, res, next) {
 
   });
 });
+
+
+router.post('/monthwiseActiveMember', async function(req, res, next) {
+  var mont = new Date(req.body.reportMonth)
+  var StartTime = moment(mont).startOf('month').utc();
+  var EndTime = moment(mont).endOf('month').utc();
+ 
+    await dbCon.connectDB();
+    const user= await db.traininguser.find({activationDate: { $gte: StartTime.toDate(), $lte: EndTime.toDate() },});
+   
+    await dbCon.closeDB();
+    res.json(user)
+  
+
+  
+});
+
+
+
 
 router.post('/checkuserexist', async function(req, res, next) {
   try {

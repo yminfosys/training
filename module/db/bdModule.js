@@ -174,6 +174,7 @@ const traininguserSchema = new mongoose.Schema({
     parentSide:String,
     activationPin:String,
     activationAmt:String,
+    activationAmtBy:String,
     email:String,
     password:String,
     mobile:String,

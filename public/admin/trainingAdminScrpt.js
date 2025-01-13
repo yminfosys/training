@@ -322,3 +322,53 @@ function setNewPassword(userID,newPassword){
             forgetpasswordInit();
         })
     }
+
+
+    function activationReport(){
+        $("#view").html('<div class="panel panel-info" style="padding: 5px;">\
+            <div class="panel-heading"  style="margin-top: 10vh;">\
+                  <h3 class="panel-title">Candidate Activation Report</h3>\
+                  <h3 id="totalActivation" class="panel-title"></h3>\
+            </div>\
+            <div id="ActivationListBody" class="panel-body">\
+            <div class="form-group">\
+                        <label class="sr-only" for="">Account NO</label>\
+                        <input type="month" class="form-control" id="reportMonth" placeholder="Account No">\
+                    </div>\
+                    <div class="form-group">\
+                        <select id="reportType" class="form-control" required="required">\
+                            <option value="">Paid By Cash</option>\
+                            <option value="Active">Paid By Bank</option>\
+                            <option value="B">Paid By PaaCrypto</option>\
+                            <option value="B">Due</option>\
+                            <option value="B">In-Active</option>\
+                        </select>\
+                    </div>\
+                    <button id="activeBtn" onclick="monthlyActiveMember()" type="submit" class="btn btn-primary">Submit</button>\
+            </div>\
+         </div>')
+     }
+
+
+     function monthlyActiveMember(){
+        var reportMonth= $("#reportMonth").val()
+        var reportType= $("#reportType").val()
+        console.log(reportMonth,reportType)
+        $.post('/admin/monthwiseActiveMember',{reportMonth,reportType},function(data){
+            console.log(data)
+            $("#totalActivation").html('Total : '+data.length+'');
+            $("#ActivationListBody").html('<ul class="list-group" id="activationList"> </ul>');
+            
+            if(data.length > 0){
+                data.forEach(val => {
+                    $("#activationList").append(' <li class="list-group-item">\
+            <span  class="badge">'+val.activationAmt+'</span>\
+            <span  class="badge">'+val.activationAmtBy+'</span>\
+            <p>Name: '+val.userName+' <br>Mobile: '+val.mobile+' \
+            <br>User-ID :'+val.userID+' <br>Email : '+val.email+'</p>\
+            </li>') 
+                });
+            }
+        })
+
+     }
