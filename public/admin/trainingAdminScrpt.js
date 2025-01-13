@@ -143,6 +143,16 @@ function setTrainingStartUserid(){
                     <label class="sr-only" for="">Amount</label>\
                     <input type="text" class="form-control" id="feeAmount" placeholder="Tuition Fee">\
                 </div>\
+                 <div class="form-group">\
+                  <label class="sr-only" for="">Payment Type</label>\
+                        <select id="paymentType" class="form-control" required="required">\
+                            <option value="Cash">Paid By Cash</option>\
+                            <option value="Bank">Paid By Bank</option>\
+                            <option value="PaaCrypto">Paid By PaaCrypto</option>\
+                            <option value="USDT">Paid By USDT</option>\
+                            <option value="Due">Due</option>\
+                        </select>\
+                    </div>\
                 <button id="activeBtn" onclick="generatePin()" type="submit" class="btn btn-primary">Submit</button>\
         </div>\
      </div>')
@@ -152,6 +162,7 @@ function setTrainingStartUserid(){
    
     var tutionFee= $("#feeAmount").val().trim();
     var userID= $("#pinUserID").val().trim().toUpperCase();
+    var paymentType = $("#paymentType").val();
    
 
     if(Number(tutionFee) < 1500){
@@ -162,7 +173,7 @@ function setTrainingStartUserid(){
 
      
        $("#activeBtn").css({"display":"none"});
-    $.post('/admin/createActivationKey',{userID:userID,tutionFee:tutionFee},function(data){
+    $.post('/admin/createActivationKey',{userID:userID,tutionFee:tutionFee,paymentType},function(data){
         if(data){
             $("#pinUserID").val(data)
         }else{
@@ -337,10 +348,11 @@ function setNewPassword(userID,newPassword){
                     </div>\
                     <div class="form-group">\
                         <select id="reportType" class="form-control" required="required">\
-                            <option value="">Paid By Cash</option>\
-                            <option value="Active">Paid By Bank</option>\
-                            <option value="B">Paid By PaaCrypto</option>\
-                            <option value="B">Due</option>\
+                            <option value="Cash">Paid By Cash</option>\
+                            <option value="Bank">Paid By Bank</option>\
+                            <option value="PaaCrypto">Paid By PaaCrypto</option>\
+                            <option value="USDT">Paid By USDT</option>\
+                            <option value="Due">Due</option>\
                             <option value="B">In-Active</option>\
                         </select>\
                     </div>\
@@ -356,19 +368,47 @@ function setNewPassword(userID,newPassword){
         console.log(reportMonth,reportType)
         $.post('/admin/monthwiseActiveMember',{reportMonth,reportType},function(data){
             console.log(data)
-            $("#totalActivation").html('Total : '+data.length+'');
+            $("#totalActivation").html('For Month  '+reportMonth+', Total : '+data.length+'');
             $("#ActivationListBody").html('<ul class="list-group" id="activationList"> </ul>');
             
             if(data.length > 0){
                 data.forEach(val => {
-                    $("#activationList").append(' <li class="list-group-item">\
+
+                    if(val.activationDate){
+                        var uad=val.activationDate
+                        uad=dateFormat(new Date(uad),"d")
+                      }else{
+                        var uad=""
+                      }
+
+                      if(val.activationAmtBy){
+                        var actBy=val.activationAmtBy
+                      }else{
+                        var actBy="Old Data"
+                      }
+                      
+
+             $("#activationList").append(' <li class="list-group-item">\
             <span  class="badge">'+val.activationAmt+'</span>\
-            <span  class="badge">'+val.activationAmtBy+'</span>\
+            <span  class="badge">'+actBy+'</span>\
             <p>Name: '+val.userName+' <br>Mobile: '+val.mobile+' \
-            <br>User-ID :'+val.userID+' <br>Email : '+val.email+'</p>\
+            <br>User-ID :'+val.userID+' <br>Email : '+val.email+'<br> Activation: '+uad+'</p>\
             </li>') 
                 });
             }
         })
 
      }
+
+     function dateFormat(date,frmat){  
+        var year=date.getFullYear();  
+        var month=date.getMonth() + 1; 
+        var day=date.getDate();
+        var hours=date.getHours();
+        var minutes=date.getMinutes();
+        if(frmat=="d"){
+          return ''+day+'-'+month+'-'+year+''
+        }else{
+          return ''+day+'-'+month+'-'+year+' '+hours+':'+minutes+''
+        }
+      }

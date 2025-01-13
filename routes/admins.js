@@ -259,7 +259,11 @@ router.post('/createActivationKey', async function(req, res, next) {
     }else{
       ////create pin//////
       var uid = (new Date().getTime()).toString(20);
-      const user= await db.traininguser.findOneAndUpdate({userID:req.body.userID},{$set:{activationPin:uid,activationAmt:req.body.tutionFee}});
+      const user= await db.traininguser.findOneAndUpdate({userID:req.body.userID},{$set:{
+        activationPin:uid,
+        activationAmt:req.body.tutionFee,
+        activationAmtBy:req.body.paymentType
+      }});
       await dbCon.closeDB();
       res.send(uid);
     }
