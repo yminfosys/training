@@ -426,10 +426,10 @@ function newRegister(){
       </div>\
     </div>\
     <div class="col-4 mb-3">\
-      <div class="card">\
+      <div class="card" onclick = "groupTrade(\''+userID+'\')">\
         <div class="card-body" style="height: 11vh; background-image: linear-gradient(#FFD700,#dc6714bd); color: #6617dc; text-align: center;">\
           <span><i style="font-size: 25px;" class="fa fa-handshake-o" aria-hidden="true"></i></span>\
-          <p class="card-text text-center" style="font-size:small;  font-weight: bold; ">Self Trade Request</p>\
+          <p class="card-text text-center" style="font-size:small;  font-weight: bold; ">Group Trade</p>\
         </div>\
       </div>\
     </div>\
@@ -742,6 +742,86 @@ function newRegister(){
   }
   
 
+  function groupTrade(userID) {
+    $.ajax({
+      url: '/training/userData',
+      method: 'GET',
+      data: { userID: userID },
+      success: function (response) {
+        if(response.gorupTradeStatus==="Accept"){
+          $("#view1").css({ "display": "block", "background-color": "rgb(32, 77, 77)" });
+          $("#view").css({ "display": "none" });
+          $("#view1").html(`Dashboad`)
+        }else{
+          $("#view1").css({ "display": "block", "background-color": "rgb(32, 77, 77)" });
+          $("#view").css({ "display": "none" });
+          $("#view1").html(`
+            <div class="container mt-5 text-white">
+              <h2 class="mb-4">ECS Mandate Authorization</h2>
+              <div id="alertBox"></div>
+              <form id="ecsForm">
+                <input type="hidden" name="userID" value="${userID}">
+                <div class="mb-3">
+                  <label class="form-label">Name : ${response.userName}</label>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Bank Name : Paa Crypto Bank</label>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Bank Account Number</label>
+                  <input type="text" class="form-control" name="accountNumber" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Transaction PIN</label>
+                  <input type="text" class="form-control" name="transactionPIN" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Frequency</label>
+                  <select class="form-select" name="frequency" required>
+                    <option value="As presented">As and when presented</option>
+                  </select>
+                </div>
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="consentCheckbox" required>
+                  <label class="form-check-label" for="consentCheckbox">
+                    I authorize Richrova to debit my Paa Crypto Bank account as per this ECS mandate.
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+              </form>
+            </div>
+          `);
+
+        }
+  
+        // Enable submit button only when consent checkbox is checked
+        $("#consentCheckbox").on("change", function () {
+          $("#submitBtn").prop("disabled", !this.checked);
+        });
+  
+        // Handle form submission
+        $("#ecsForm").on("submit", function (e) {
+          e.preventDefault();
+          $.ajax({
+            url: '/training/submit-mandate',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (res) {
+              $("#alertBox").html(`<div class="alert alert-success">${res.message}</div>`);
+              $("#ecsForm")[0].reset();
+              $("#submitBtn").prop("disabled", true);
+            },
+            error: function () {
+              $("#alertBox").html(`<div class="alert alert-danger">Submission failed. Please try again.</div>`);
+            }
+          });
+        });
+      },
+      error: function (err) {
+        $('#alertBox').html(`<div class="alert alert-danger">Something went wrong. Try again.</div>`);
+      }
+    });
+  }
 
   function earningData(userID){
     $.post('/training/earningData',{userID:userID},  function(data){

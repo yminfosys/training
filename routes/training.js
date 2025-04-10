@@ -285,6 +285,29 @@ router.post('/mydirect', async function(req, res, next) {
   
   });
 
+  router.get('/userData', async function(req, res, next) {
+    console.log(req.query)
+    try {
+
+      const { userID } = req.query;
+      if (!userID) return res.status(400).json({ message: 'userID is required' });
+      await dbCon.connectDB();
+      const user = await db.traininguser.findOne({ userID, varyficatinStatus:"Verify"}).lean();
+  
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      // Send back only safe and needed fields
+      res.json(user);
+    } catch (error) {
+      console.error('Error in /getUser:', error);
+      res.status(500).json({ message: 'Server error' });
+    } finally{
+      await dbCon.closeDB();
+    }
+  
+  
+  });
+
 
 
 

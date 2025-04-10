@@ -179,6 +179,7 @@ const traininguserSchema = new mongoose.Schema({
     password:String,
     mobile:String,
     varyficatinStatus:String,
+    gorupTradeStatus:String,
     activationDate:{ type: Date},
     regdate: { type: Date, default: Date.now },
     lastlogin: { type: Date},

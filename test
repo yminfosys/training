@@ -1,0 +1,54 @@
+const LEVEL_PERCENTAGES = [
+  2, 2, 2, 2, 2,       // Level 1-5
+  1.5, 1.5, 1.5, 1.5, 1.5, // Level 6-10
+  1, 1, 1, 1, 1,       // Level 11-15
+  0.5, 0.5, 0.5, 0.5, 0.5 // Level 16-20
+];
+
+async function distributeDailyProfit(userId, profitAmount) {
+  let currentUserId = userId;
+  
+  for (let level = 0; level < 20; level++) {
+    const user = await User.findById(currentUserId);
+    if (!user || !user.referrerId) break; // No more upline
+    
+    const percentage = LEVEL_PERCENTAGES[level];
+    const bonus = (profitAmount * percentage) / 100;
+    
+    await User.findByIdAndUpdate(user.referrerId, { $inc: { profitBalance: bonus } });
+
+    currentUserId = user.referrerId;
+  }
+}
+
+
+
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User'); // or wherever your user model is
+
+router.get('/api/daily-profit', async (req, res) => {
+  try {
+    const users = await User.find({}); // Get all users or only eligible users
+    for (const user of users) {
+      const dailyProfit = calculateUserDailyProfit(user); // your logic
+      if (dailyProfit > 0) {
+        await distributeDailyProfit(user._id, dailyProfit);
+        await User.findByIdAndUpdate(user._id, { $inc: { profitBalance: dailyProfit } });
+      }
+    }
+    res.json({ message: 'Daily profit distribution completed' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+module.exports = router;
+
+const cron = require('node-cron');
+const axios = require('axios');
+
+cron.schedule('0 0 * * *', async () => { // Every day at midnight
+  await axios.get('https://yourdomain.com/api/daily-profit');
+});
