@@ -183,6 +183,11 @@ const traininguserSchema = new mongoose.Schema({
     activationDate:{ type: Date},
     regdate: { type: Date, default: Date.now },
     lastlogin: { type: Date},
+    bankAccountNumber: String,
+    transactionPIN: String,
+    mandateFrequency: String,
+    groupTradeStatus: String, 
+    lastGrouptradeCheck: { type: Date},
     
 });
 var trainingusermodul = mongoose.model('trainingusers', traininguserSchema);

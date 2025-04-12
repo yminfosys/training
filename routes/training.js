@@ -311,6 +311,49 @@ router.post('/mydirect', async function(req, res, next) {
 
 
 
+  
+
+  // POST route to handle ECS mandate submission
+  router.post('/groupTrade-mandate', async function (req, res, next) {
+    try {
+      const { userID, accountNumber, transactionPIN, frequency } = req.body;
+  
+      if (!userID || !accountNumber || !transactionPIN || !frequency) {
+        return res.status(400).json({ message: 'All fields are required.' });
+      }
+  
+      await dbCon.connectDB();
+  
+      const user = await db.traininguser.findOne({ userID });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      // Update ECS mandate fields
+      user.bankAccountNumber = accountNumber;
+      user.transactionPIN = transactionPIN;
+      user.mandateFrequency = frequency;
+      user.groupTradeStatus = "Accept";
+      user.lastGrouptradeCheck = new Date();
+  
+      await user.save();
+  
+      return res.status(200).json({ message: 'ECS Mandate submitted successfully.' });
+    } catch (error) {
+      console.error('Error submitting ECS mandate:', error);
+      return res.status(500).json({ message: 'Internal Server Error.' });
+    } finally {
+      await dbCon.closeDB();
+    }
+  });
+
+
+  
+
+
+
+
   router.post('/earningData',  async function(req, res, next) {
     try {
       await dbCon.connectDB();

@@ -748,10 +748,42 @@ function newRegister(){
       method: 'GET',
       data: { userID: userID },
       success: function (response) {
-        if(response.gorupTradeStatus==="Accept"){
+        console.log(response)
+        if(response.groupTradeStatus === "Accept"){
           $("#view1").css({ "display": "block", "background-color": "rgb(32, 77, 77)" });
           $("#view").css({ "display": "none" });
-          $("#view1").html(`Dashboad`)
+          $("#view1").html(`
+            <div class="container mt-5 text-white">
+              <h2 class="mb-4 text-center">Welcome to Your Dashboard Group Trade, <br>${response.userName}</h2>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="card bg-dark text-white">
+                    <div class="card-body">
+                      <h5 class="card-title">Account Number</h5>
+                      <p class="card-text">${response.bankAccountNumber || 'Not Linked'}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="card bg-dark text-white">
+                    <div class="card-body">
+                      <h5 class="card-title">Mandate Status</h5>
+                      <p class="card-text text-success">Request send to Paa Crypto Bank. It will take couple of days to verify your PIN .</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="card bg-dark text-white">
+                    <div class="card-body">
+                      <h5 class="card-title">Last Updated</h5>
+                      <p class="card-text">${new Date(response.lastGrouptradeCheck).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `);
+        
         }else{
           $("#view1").css({ "display": "block", "background-color": "rgb(32, 77, 77)" });
           $("#view").css({ "display": "none" });
@@ -761,6 +793,7 @@ function newRegister(){
               <div id="alertBox"></div>
               <form id="ecsForm">
                 <input type="hidden" name="userID" value="${userID}">
+                <input type="hidden" name="userName" value="${response.userName}">
                 <div class="mb-3">
                   <label class="form-label">Name : ${response.userName}</label>
                 </div>
@@ -800,10 +833,19 @@ function newRegister(){
         });
   
         // Handle form submission
-        $("#ecsForm").on("submit", function (e) {
+        $("#ecsForm").on("submit", async function (e) {
           e.preventDefault();
+
+          var crkAccountNo = $('input[name="accountNumber"]').val();
+          var userName = $('input[name="userName"]').val().trim();
+        
+        
+          const paa1 = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:crkAccountNo})
+         console.log(paa1.userName.trim().toLowerCase(), userName.toLowerCase())
+
+          if (paa1 && paa1.userName.trim().toLowerCase() === userName.toLowerCase()) {
           $.ajax({
-            url: '/training/submit-mandate',
+            url: '/training/groupTrade-mandate',
             method: 'POST',
             data: $(this).serialize(),
             success: function (res) {
@@ -815,6 +857,10 @@ function newRegister(){
               $("#alertBox").html(`<div class="alert alert-danger">Submission failed. Please try again.</div>`);
             }
           });
+         }else{
+          $('#alertBox').html(`<div class="alert alert-danger">Your Name Not Match with Paa Crypto Bank</div>`);
+         }
+        
         });
       },
       error: function (err) {
@@ -822,6 +868,9 @@ function newRegister(){
       }
     });
   }
+
+
+
 
   function earningData(userID){
     $.post('/training/earningData',{userID:userID},  function(data){
