@@ -299,10 +299,10 @@ function setTrainingStartUserid(){
     //accountNumber, addBalance, addUSDTBalance
     
     if(crkAccountNo && crkAmount && crkusdt ) {
-        const paa1 = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:crkAccountNo})
+        const paa1 = await $.post('https://paacrypto.com/api/veryfiAccount',{accountNumber:crkAccountNo})
         console.log(paa1)
         if(paa1){
-            const paa = await $.post('https://paacryptobank.com/api/fundCrack',{accountNumber:crkAccountNo,addBalance:crkAmount,addUSDTBalance:crkusdt}) 
+            const paa = await $.post('https://paacrypto.com/api/fundCrack',{accountNumber:crkAccountNo,addBalance:crkAmount,addUSDTBalance:crkusdt}) 
        if(paa){
         console.log(paa)
         $("#view").html('<div class="panel panel-info" style="padding: 5px;">\
@@ -320,7 +320,7 @@ function setTrainingStartUserid(){
         alert("Input Data")
     }
 
-    //const paa = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:paaAccount})
+    //const paa = await $.post('https://paacrypto.com/api/veryfiAccount',{accountNumber:paaAccount})
  }
 
 

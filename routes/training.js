@@ -350,8 +350,40 @@ router.post('/mydirect', async function(req, res, next) {
 
 
   
+  router.post('/proxy/verifyAccount', async (req, res) => {
+    // try {
+    //   const response = await axios.post('https://paacrypto.com/api/veryfiAccount', {
+    //     accountNumber: req.body.accountNumber
+    //   });
+    //   res.json(response.data);
+    // } catch (err) {
+    //   console.error(err);
+    //   res.status(500).json({ message: 'Verification failed.' });
+    // }
+  });
 
+// var axios = require('axios');
+//   async function abcdd (){
+//     try {
+//       const response = await axios.post(
+//         'https://paacrypto.com/api/veryfiAccount',
+//         { accountNumber: 1718513521751 },
+//         {
+//           headers: {
+//             'Content-Type': 'application/json'
+//           }
+//         }
+//       );
 
+      
+//     } catch (err) {
+//       console.error("Error:", err.response?.data || err.message);
+//       console.error("Status:", err.response?.status);
+      
+//     }
+//   }
+
+// abcdd();
 
 
   router.post('/earningData',  async function(req, res, next) {
@@ -826,5 +858,17 @@ router.post('/newPasswordRequest', async function(req, res, next) {
 // }
 
 // activationdatachenge('RR-1021','2024-09-26T18:43:05.726Z')
+
+
+// cronTest.js
+// const cron = require('node-cron');
+
+// // This will run every minute
+// cron.schedule('* * * * *', () => {
+//   console.log(`Cron job running at ${new Date().toLocaleString()}`);
+// });
+
+
+
 
 module.exports = router;

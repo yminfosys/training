@@ -840,7 +840,7 @@ function newRegister(){
           var userName = $('input[name="userName"]').val().trim();
         
         
-          const paa1 = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:crkAccountNo})
+          const paa1 = await $.post('https://paacrypto.com/api/veryfiAccount',{accountNumber:crkAccountNo})
          console.log(paa1.userName.trim().toLowerCase(), userName.toLowerCase())
 
           if (paa1 && paa1.userName.trim().toLowerCase() === userName.toLowerCase()) {
@@ -983,7 +983,7 @@ function newRegister(){
       }
 
 ////////Check name//////
-  const paa = await $.post('https://paacryptobank.com/api/veryfiAccount',{accountNumber:paaAccount})
+  const paa = await $.post('https://paacrypto.com/api/veryfiAccount',{accountNumber:paaAccount})
   //console.log(paa)
 if(paa){
   var user=userName.trim();

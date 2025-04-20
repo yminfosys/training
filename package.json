@@ -19,6 +19,7 @@
     "mongojs": "^3.1.0",
     "mongoose": "^8.5.2",
     "morgan": "~1.9.1",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.7.3",
     "request": "^2.88.2",
     "sib-api-v3-sdk": "^8.3.0",
