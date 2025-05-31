@@ -159,6 +159,9 @@ function setTrainingStartUserid(){
      </div>')
  }
 
+
+
+
  function generatePin(){
    
     var tutionFee= $("#feeAmount").val().trim();
@@ -443,3 +446,58 @@ function setNewPassword(userID,newPassword){
           return ''+day+'-'+month+'-'+year+' '+hours+':'+minutes+''
         }
       }
+
+function activInactiveReport() {
+    $("#view").html(`
+        <div class="panel panel-info" style="padding: 5px;">
+            <div class="panel-heading" style="margin-top: 10vh;">
+                <h3 class="panel-title">Active / Inactive User Report</h3>
+            </div>
+            <div class="panel-body">
+            <div class="form-group">
+                    <label for="statusSelect">UserID</label>
+                    <input type="text" class="form-control" id="pinUserID" placeholder="RR-1003">\
+                </div>
+                <div class="form-group">
+                    <label for="statusSelect">Select Status</label>
+                    <select id="statusSelect" class="form-control">
+                        <option value="all">All</option>
+                        <option value="Verify">Verified</option>
+                        <option value="NotVerify">Not Verified</option>
+                    </select>
+                </div>
+                <button id="fetchUsersBtn" onclick="fetchUserStatusReport()" class="btn btn-primary">Get Report</button>
+                <div id="reportResult" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    `);
+}
+
+function fetchUserStatusReport() {
+    const status = $("#statusSelect").val();
+    const userID = $("#pinUserID").val().trim();
+
+    $.ajax({
+        url: "/admin/status-report",  // Your server route
+        method: "GET",
+        data: { status, userID },  // Include both status and userID
+        success: function(response) {
+            console.log(response)
+            let html = "<ul class='list-group'>";
+            if (response.length === 0) {
+                html += "<li class='list-group-item'>No users found.</li>";
+            } else {
+                response.forEach(user => {
+                    html += `<li class='list-group-item'>
+                        <strong>${user.userID}</strong> - ${user.userName} - ${user.mobile} - <strong>${user.varyficatinStatus}</strong>
+                    </li>`;
+                });
+            }
+            html += "</ul>";
+            $("#reportResult").html(html);
+        },
+        error: function() {
+            $("#reportResult").html("<div class='text-danger'>Error loading report.</div>");
+        }
+    });
+}

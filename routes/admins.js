@@ -677,6 +677,47 @@ router.post('/commisionIncentiveadd', async function(req, res, next) {
 });
 
 
+
+
+
+
+
+router.get('/status-report', async (req, res) => {
+    const { userID ,status} = req.query;
+    const query = {};
+    if (!userID) {
+        return res.status(400).json({ error: 'userID is required' });
+    }
+
+    if (status && status !== 'all') {
+    query.varyficatinStatus = status === 'NotVerify' ? { $ne: 'Verify' } : 'Verify';
+    }
+
+    try {
+        await dbCon.connectDB();
+
+        // Step 1: Get the user to find their rootID
+        const user = await db.traininguser.findOne({ userID });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+         query.rootID = { $regex: '.*' + user.rootID + '-1.*' , $options: 'i' };
+
+        // Step 2: Find all users with the same rootID
+        const users  = await db.traininguser.find(query); 
+        
+        res.json(users);
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: 'Database error', details: err.message });
+    } finally {
+        await dbCon.closeDB();
+    }
+});
+
+
 // userID: '2',
 // accounttype: 'New',
 // inr: '9002',
