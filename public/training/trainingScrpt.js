@@ -703,6 +703,37 @@ function enhanceTree(treeRootSelector = '.tree') {
   });
 }
 
+
+function centerTree(prefer = 'left') {
+  const $wrap = $('.tree-wrapper').first();
+  const $tree = $wrap.find('.tree').first();
+  if (!$wrap.length || !$tree.length) return;
+
+  // small delay to allow layout/animations to settle
+  setTimeout(() => {
+    // choose strategy:
+    // 'left' -> ensure leftmost edge is visible (good for mobile)
+    // 'center' -> center the root horizontally (good for desktop)
+    if (prefer === 'left') {
+      // scroll to leftmost with a small offset for padding
+      $wrap.animate({ scrollLeft: 0 }, 250);
+    } else {
+      // try to center the root node if it exists
+      const $rootNode = $tree.find('[data-uid]').first();
+      if ($rootNode.length) {
+        const wrapLeft = $wrap.offset().left;
+        const wrapWidth = $wrap.outerWidth();
+        const elLeft = $rootNode.offset().left;
+        const elWidth = $rootNode.outerWidth();
+        const scrollTo = $wrap.scrollLeft() + (elLeft - wrapLeft) - (wrapWidth / 2) + (elWidth / 2);
+        $wrap.animate({ scrollLeft: scrollTo }, 300);
+      } else {
+        // fallback to left
+        $wrap.animate({ scrollLeft: 0 }, 250);
+      }
+    }
+  }, 60); // small timeout to allow rendering
+}
 // Render helper for a single node
 function renderNode(selector, uid, displayName = '', verifyFlag = '') {
   const $el = $(selector);
@@ -774,7 +805,7 @@ async function geonology(userID) {
   </div>
 </div>
 <!-- after DOM injection -->
-<script>enhanceTree('.tree');</script>
+<script>enhanceTree('.tree');  centerTree('left');</script>
     `);
 
     // fetch root and populate

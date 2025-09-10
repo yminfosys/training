@@ -1286,3 +1286,196 @@ if(paa){
    // alert(content)
     navigator.clipboard.writeText(content);
   }
+
+
+
+
+
+
+  function enhanceTree(treeRootSelector = '.tree') {
+  const treeRoot = document.querySelector(treeRootSelector);
+  if (!treeRoot) return;
+
+  // mark li that have child ULs
+  treeRoot.querySelectorAll('li').forEach(li => {
+    if (li.querySelector('ul')) {
+      li.classList.add('has-children');
+    } else {
+      li.classList.remove('has-children');
+    }
+  });
+
+  // add pop animation briefly to nodes
+  treeRoot.querySelectorAll('.node').forEach((node, idx) => {
+    node.classList.remove('pop');
+    // stagger effect
+    setTimeout(() => node.classList.add('pop'), idx * 40);
+  });
+}
+
+// Render helper for a single node
+function renderNode(selector, uid, displayName = '', verifyFlag = '') {
+  const $el = $(selector);
+  $el.removeClass('verified not-verified empty pop').empty();
+
+  if (!uid) {
+    // placeholder / empty node
+    $el.addClass('node empty').html('&mdash;');
+    return;
+  }
+
+  const verified = (String(verifyFlag).toLowerCase() === 'verify');
+  const classes = 'node ' + (verified ? 'verified' : 'not-verified');
+
+  const inner = `
+    <div class="${classes}" tabindex="0" role="button" aria-pressed="false" data-uid="${uid}">
+      <span class="uid">${uid}</span>
+      <span class="name">${displayName || ''}</span>
+    </div>
+  `;
+  $el.html(inner);
+
+  // small pop animation
+  const $node = $el.find('.node').first();
+  // remove previous pop class then reflow to retrigger animation
+  $node.removeClass('pop');
+  void $node[0].offsetWidth;
+  $node.addClass('pop');
+}
+
+/**
+ * Build a 2-level binary tree visualization for a user.
+ * - userID: root user ID
+ */
+async function geonology(userID) {
+  try {
+    // show container
+    $('#view1').css({ display: 'block', 'background-color': 'rgb(32, 77, 77)' });
+    $('#view').css({ display: 'none' });
+
+    // initial skeleton
+    $('#view1').html(`
+      <span onclick="closingElement('view1')" style="color:red; float:right; padding:5px; border-radius:10px; border:1px solid #0f0707; margin:10px;" class="badge">X</span>
+      <div class="tree-wrapper">
+  <div class="tree">
+    <ul>
+      <li>
+        <div id="root" class="node verified"><span class="uid">RR-5010</span><span class="name">Alice</span></div>
+        <ul>
+          <li>
+            <div id="rootLeft" class="node not-verified"><span class="uid">RR-4001</span><span class="name">Bob</span></div>
+            <ul>
+              <li><div id="rootLeft1" class="node empty">—</div></li>
+              <li><div id="rootLeft2" class="node empty">—</div></li>
+            </ul>
+          </li>
+
+          <li>
+            <div id="rootRight" class="node verified"><span class="uid">RR-4022</span><span class="name">Cara</span></div>
+            <ul>
+              <li><div id="rootRight1" class="node empty">—</div></li>
+              <li><div id="rootRight2" class="node empty">—</div></li>
+            </ul>
+          </li>
+
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- after DOM injection -->
+<script>enhanceTree('.tree');</script>
+    `);
+
+    // fetch root and populate
+    const rootNode = await geonologyNode(userID);
+
+    // top root
+    renderNode('#root', rootNode.root, rootNode.rootName, rootNode.rootVerify);
+
+    // left branch
+    if (rootNode.left) {
+      renderNode('#rootLeft', rootNode.left, rootNode.leftName, rootNode.leftVeryfy);
+      // fetch left child details (grandchildren)
+      const leftNode = await geonologyNode(rootNode.left);
+      renderNode('#rootLeft1', leftNode.left, leftNode.leftName, leftNode.leftVeryfy);
+      renderNode('#rootLeft2', leftNode.right, leftNode.rightName, leftNode.rightVeryfy);
+    } else {
+      renderNode('#rootLeft', null);
+      renderNode('#rootLeft1', null);
+      renderNode('#rootLeft2', null);
+    }
+
+    // right branch
+    if (rootNode.right) {
+      renderNode('#rootRight', rootNode.right, rootNode.rightName, rootNode.rightVeryfy);
+      const rightNode = await geonologyNode(rootNode.right);
+      renderNode('#rootRight1', rightNode.left, rightNode.leftName, rightNode.leftVeryfy);
+      renderNode('#rootRight2', rightNode.right, rightNode.rightName, rightNode.rightVeryfy);
+    } else {
+      renderNode('#rootRight', null);
+      renderNode('#rootRight1', null);
+      renderNode('#rootRight2', null);
+    }
+
+    // delegated click handler: click any .node and drill down using the data-uid
+    $('#view1').off('click', '.node').on('click', '.node', function (e) {
+      const uid = $(this).data('uid');
+      if (uid) {
+        // small UX: scroll tree wrapper to center the clicked node (if wide)
+        setTimeout(() => {
+          const $wrap = $('.tree-wrapper').first();
+          const offsetEl = $(this).closest('.node');
+          if ($wrap.length && offsetEl.length) {
+            const wrapLeft = $wrap.offset().left;
+            const wrapWidth = $wrap.outerWidth();
+            const elLeft = offsetEl.offset().left;
+            const elWidth = offsetEl.outerWidth();
+            const scrollTo = $wrap.scrollLeft() + (elLeft - wrapLeft) - (wrapWidth / 2) + (elWidth / 2);
+            $wrap.animate({ scrollLeft: scrollTo }, 300);
+          }
+        }, 40);
+
+        geonology(uid);
+      }
+    });
+
+  } catch (err) {
+    console.error('geonology error', err);
+    $('#view1').append(`<div class="alert alert-danger mt-3">Could not load genealogy data. Try again later.</div>`);
+  }
+}
+
+/**
+ * Wrapper to call backend and return a promise for node data.
+ * - returns an object with fields expected by renderNode:
+ *   { root, rootName, left, leftName, right, rightName, rootVerify, leftVeryfy, rightVeryfy }
+ */
+function geonologyNode(userID) {
+  return new Promise((resolve, reject) => {
+    if (!userID) {
+      resolve({});
+      return;
+    }
+    $.post('/training/getGeonologyNode', { userID: userID })
+      .done(function (data) {
+        // default safe mapping if fields missing
+        const out = {
+          root: data.root || null,
+          rootName: data.rootName || '',
+          left: data.rootLeft || null,
+          leftName: data.leftName || '',
+          right: data.rootRight || null,
+          rightName: data.rightName || '',
+          rootVerify: data.rootVerify || '',
+          leftVeryfy: data.leftVeryfy || '',
+          rightVeryfy: data.rightVeryfy || ''
+        };
+        resolve(out);
+      })
+      .fail(function (jqXHR, textStatus, err) {
+        console.error('geonologyNode AJAX error', textStatus, err);
+        reject(err || textStatus);
+      });
+  });
+}
