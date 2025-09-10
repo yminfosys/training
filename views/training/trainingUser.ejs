@@ -1,233 +1,174 @@
-
 <!doctype html>
 <html lang="en">
   <head>
     <title>Richrova</title>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta  name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="icon" href="/images/logo/logo.png" type="image/gif" sizes="32x32">
-    <!-- <link rel="shortcut icon" href="./assets/image/favicon-32x32.png" type="image/gif" sizes="32x32">
-     <link rel="apple-touch-icon" href="./assets/image/apple-touch-icon.png" type="image/gif"> -->
 
-     <link href="/user/user.css" rel="stylesheet" type="text/css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        
-       
+    <!-- local and remote css/js -->
+    <link href="/user/user.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-
-        <script src="/training/trainingScrpt.js"></script>
-        
-    <!-- Bootstrap CSS v5.2.1 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+      :root{
+        --bg: #062b2b;
+        --panel: #0f3a3a;
+        --accent: #20e47f;
+        --muted: #cfdcd9;
+        --card: rgba(255,255,255,0.03);
+        --glass: rgba(255,255,255,0.02);
+        --brand: #ffd166;
+      }
+
+      html,body{
+        height:100%;
+        margin:0;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #041b1b 0%, #083737 100%);
+        color: #eef4ef;
+        -webkit-font-smoothing:antialiased;
+      }
+
+      /* NAV */
+      nav.navbar {
+        background: linear-gradient(90deg,#041b2b 0%, #073939 100%);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+      .navbar-brand img { height:38px; }
+      .nav-link { color: #e6f5f2 !important; }
+      .nav-link:hover{ color: var(--accent) !important; }
+      .btn-outline-light { color: #f5fbfa; border-color: rgba(255,255,255,0.06); }
+
+      .container-fluid, .container { max-width:1100px; }
+
+      /* cards */
+      .card.custom {
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border: 1px solid rgba(255,255,255,0.04);
+        color: #f3fbf9;
+        border-radius: 10px;
+      }
+      .card.custom .card-body { padding:1rem 1rem; }
+
+      /* hero / top */
+      header { padding-top:72px; padding-bottom:24px; }
+      .lead { color: #dfeff0; }
+
+      /* form controls */
+      .form-control {
+        background: transparent;
+        color: #eef7f6;
+        border: 1px solid rgba(255,255,255,0.06);
+      }
+      .form-control::placeholder { color: rgba(255,255,255,0.5); }
+      .input-group .form-control { border-left: 0; }
+
+      /* password toggle (eye is dark) */
+      .pw-toggle {
+        cursor:pointer;
+        color: rgba(255,255,255,0.6);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      /* dark colored eye glyph */
+      .pw-toggle i { color: #222 !important; font-size:1.05rem; }
+
+      .pw-toggle:hover i { color: var(--accent) !important; }
+
+      /* tree */
+      .tree { left: 0; max-width:100%; overflow-x:auto; }
+
+      /* responsive tweaks */
+      @media (max-width: 767.98px) {
+        .navbar .nav-link { padding: .4rem .6rem; }
+        .fixed-bottom { position: fixed; bottom: 0; left: 0; right: 0; }
+        .card.custom { border-radius: 8px; }
+      }
+
+      /* utility */
+      .muted-small { color: rgba(255,255,255,0.62); font-size: .92rem; }
+      .accent-text { color: var(--accent); }
+      .hidden { display:none !important; }
+
+      /* waiting overlays */
+      #waitingPage, #waitingGif { display:none; }
+    </style>
   </head>
-  <body style="background-color: rgb(32, 77, 77); color: antiquewhite;">
-    
-    <div id="waitingPage" style="position: absolute; display: none; width: 100%; height: 100vh; z-index: 100 !important; background-color: black; opacity: 0.3;">
-      <img style="height: 15vh; width: 30%; margin-top: 30vh; margin-left: 33%;" src="/images/gif/progress.gif">
+
+  <body>
+
+    <!-- Waiting overlay (existing) -->
+    <div id="waitingPage" style="position: fixed; display: none; inset:0; z-index:1050; background-color: rgba(0,0,0,0.4);">
+      <div style="height:100%; display:flex; align-items:center; justify-content:center;">
+        <img style="height: 12vh;" src="/images/gif/progress.gif" alt="loading">
+      </div>
     </div>
-   
 
-     <!-- check alredy login -->
-     <input  type="hidden" id="allredyloginuserID" value="<%=allredylogin%>">
-     <input  type="hidden" id="sponsID" value="<%=sponsID%>">
-     <input  type="hidden" id="sponsSide" value="<%=sponsSide%>">
+    <!-- hidden server-provided values -->
+    <input type="hidden" id="allredyloginuserID" value="<%=allredylogin%>">
+    <input type="hidden" id="sponsID" value="<%=sponsID%>">
+    <input type="hidden" id="sponsSide" value="<%=sponsSide%>">
 
-
+    <!-- header / navbar -->
     <header>
-      <!-- place navbar here -->
-      <nav id="topnav" style="display: non; background-color: #041b2b; color: aliceblue; " class="navbar fixed-top" >
+      <nav id="topnav" class="navbar fixed-top navbar-expand-lg">
         <div class="container-fluid">
-              <!-- <a> <span style="background-color: #ccdbe6; " class="navbar-toggler-icon" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"></span></a> -->
-              <a class="navbar-brand" href="#"><img src="/images/logo/logo.png" alt="Logo" width="120" height="40" class="d-inline-block align-text-top"> </a>
-              <a id="logout" onclick="logout()" style="">
-                Logout
-              </a>
+          <a class="navbar-brand" href="#"><img src="/images/logo/logo.png" alt="Logo"></a>
+
+          <button class="navbar-toggler btn btn-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+              <li class="nav-item"><a class="nav-link" href="#view">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="#courses">Courses</a></li>
+              <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+              <li class="nav-item"><a id="logout" onclick="logout()" style="display:none; cursor:pointer;" class="nav-link">Logout</a></li>
+              <li class="nav-item"><a class="btn btn-outline-light ms-3" href="/training">Training</a></li>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
 
-<style>
-  .tree{
-    position: relative;
-    left: -65px;
-  }
-  .tree ul {
-  padding-top: 20px;
-  position: relative;
-  transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  
-}
+    <!-- top background spacer -->
+    <div id="topBackground" style="height: 12vh;"></div>
 
-.tree li {
-  float: left;
-  text-align: center;
-  list-style-type: none;
-  position: relative;
-  padding: 20px 5px 0 5px;
-  transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-}
-
-.tree li::before,
-.tree li::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 1px solid #ccc;
-  width: 50%;
-  height: 20px;
-}
-
-.tree li::after {
-  right: auto;
-  left: 50%;
-  border-left: 1px solid #ccc;
-}
-
-.tree li:only-child::after,
-.tree li:only-child::before {
-  display: none;
-}
-
-.tree li:only-child {
-  padding-top: 0;
-}
-
-.tree li:first-child::before,
-.tree li:last-child::after {
-  border: 0 none;
-}
-
-.tree li:last-child::before {
-  border-right: 1px solid #ccc;
-  border-radius: 0 5px 0 0;
-  -webkit-border-radius: 0 5px 0 0;
-  -moz-border-radius: 0 5px 0 0;
-}
-
-.tree li:first-child::after {
-  border-radius: 5px 0 0 0;
-  -webkit-border-radius: 5px 0 0 0;
-  -moz-border-radius: 5px 0 0 0;
-}
-
-.tree ul ul::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  border-left: 1px solid #ccc;
-  width: 0;
-  height: 20px;
-}
-
-.tree li div {
-  border: 1px solid #ccc;
-  padding: 5px 10px;
-  text-decoration: none;
-  color: #fff;
-  font-family: arial, verdana, tahoma;
-  font-size: 11px;
-  display: inline-block;
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-
-
-}
-
-.tree li div i { 
-  font-size: 25px;  
-  
-
-}
-
-.tree li div:hover,
-.tree li div:hover+ul li div {
-  background: #618198;
-  border: 1px solid #94a0b4;
-}
-
-.tree li div:hover+ul li::after,
-.tree li div:hover+ul li::before,
-.tree li div:hover+ul::before,
-.tree li div:hover+ul ul::before {
-  border-color: #94a0b4;
-}
-</style>
-
-  
-
-    <div id="topBacground"  style="background-color: #041b2b;  height: 25vh; display:none"></div>
-
-      <div   id="ddd"    style="margin-top: 10vh; overflow: auto; display: none;" >
-        
-     </div>
-     <div id="waitingGif" style="position: absolute; z-index: 100; width: 100%; height: 100vh; background-color: #3a5d77; margin-top: -3vh; display: none;">
-      <img style="width: 50%; margin-left: 25%; margin-top: 30vh;" src="/images/gif/circle.gif" alt="--">
-     </div>
-
-    <div id="view1" style="margin-top: 7vh; display: none;  margin-bottom: 10vh; height: 93vh; background-color: #3a5d77; overflow-y: auto;">
-      
-     
+    <!-- main view container -->
+    <div id="view" class="container-fluid" style="margin-top: 1rem; color:#eef4ef;">
+      <!-- content injected by JS -->
     </div>
-    
-   <div id="view"   class="container-fluid "  style="margin-top: 10vh; color:#dc6714bd;  " >
-   
-    
 
-   </div>
+    <!-- secondary view overlay -->
+    <div id="view1" style="display:none; margin-top: 7vh; margin-bottom: 8vh; background: linear-gradient(180deg,#0b3b3b,#083233); padding: 1rem; border-radius:10px;">
+    </div>
 
- 
+    <!-- waiting GIF overlay (existing) -->
+    <div id="waitingGif" style="position: fixed; z-index: 1060; inset:0; display:none; background-color: rgba(0,0,0,0.45);">
+      <div style="height:100%; display:flex; align-items:center; justify-content:center;">
+        <img style="width: 110px;" src="/images/gif/circle.gif" alt="loading">
+      </div>
+    </div>
 
-  
-   
-
+    <!-- footer nav (hidden by default as earlier) -->
     <footer>
-      <!-- place footer here -->
-      <nav id="footnav" style=" color: rgb(201, 181, 156); background-color: #041b2b !important; display: none;" class="navbar fixed-bottom bg-body-tertiary">
-        <div id="footerBody" class="container-fluid">
-        <!-- <div onclick="" style="text-align: center; font-size: small;" >
-          <i style="font-size: 30px;" class="fa fa-home" aria-hidden="true"></i>
-          <br>Home
-        </div>
-
-        <div style="text-align: center; font-size: small;" >
-          <i style="font-size: 30px;" class="fa fa-file-text" aria-hidden="true"></i>
-          <br>Transection
-        </div>
-
-        <div style="text-align: center; font-size: small;" >
-          <i style="font-size: 30px;" class="fa fa-btc" aria-hidden="true"></i>
-          <br>Currency
-        </div>
-
-        <div style="text-align: center; font-size: small;" >
-          <i style="font-size: 30px;" class="fa fa-cog" aria-hidden="true"></i>
-          <br>Setting
-        </div>
-
-        <div style="text-align: center; font-size: small;" >
-          <i style="font-size: 30px;" class="fa fa-life-ring" aria-hidden="true"></i>
-          <br>Help
-        </div> -->
-        
-        </div>
+      <nav id="footnav" class="navbar fixed-bottom bg-transparent" style="display:none;">
+        <div id="footerBody" class="container-fluid"></div>
       </nav>
     </footer>
-    <!-- Bootstrap JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"crossorigin="anonymous"></script>
+    <!-- Bootstrap & utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+    <!-- main script (external) -->
+    <script src="/training/trainingScrpt.js"></script>
   </body>
 </html>
-
