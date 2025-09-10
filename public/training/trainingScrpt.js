@@ -553,29 +553,178 @@ function createReferral(userID){
   `);
 }
 
-async function geonology(userID){
-  $("#view1").css({"display":"block" , "background-color": "rgb(32, 77, 77)"});
-  $("#view").css({"display":"none"});
+// async function geonology(userID){
+//   $("#view1").css({"display":"block" , "background-color": "rgb(32, 77, 77)"});
+//   $("#view").css({"display":"none"});
+//   $("#view1").html(`
+//     <span onclick="closingElement('view1')" style="color:red; float:right; padding: 5px; border-radius: 10px; border: 1px solid #0f0707; margin-top: 3vh;" class="badge">X</span>
+//     <div style="overflow: auto; width: 70vh; text-align: center;">
+//       <div class="tree">
+//         <ul>
+//           <li>
+//             <div id="root"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+//             <ul>
+//               <li>
+//                 <div id="rootLeft"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+//                 <ul>
+//                   <li><div id="rootLeft1"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+//                   <li><div id="rootLeft2"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+//                 </ul>
+//               </li>
+//               <li>
+//                 <div id="rootRight"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+//                 <ul>
+//                   <li><div id="rootRight1"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+//                   <li><div id="rootRight2"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+//                 </ul>
+//               </li>
+//             </ul>
+//           </li>
+//         </ul>
+//       </div>
+//     </div>
+//   `);
+
+//   const rootNode = await geonologyNode(userID);
+
+//   if (rootNode.root) {
+//     if (rootNode.rootVerify === "Verify") {
+//       $("#root").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.root}')">${rootNode.root}</span><br/><span>${rootNode.rootName}</span>`);
+//     } else {
+//       $("#root").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.root}')">${rootNode.root}</span><br/><span>${rootNode.rootName}</span>`);
+//     }
+//   }
+
+//   // Left branch
+//   if (rootNode.left) {
+//     if (rootNode.leftVeryfy === "Verify") {
+//       $("#rootLeft").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.left}')">${rootNode.left}</span><br/><span>${rootNode.leftName}</span>`);
+//     } else {
+//       $("#rootLeft").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.left}')">${rootNode.left}</span><br/><span>${rootNode.leftName}</span>`);
+//     }
+
+//     const rootNodeLeft = await geonologyNode(rootNode.left);
+
+//     if (rootNodeLeft.left) {
+//       if (rootNodeLeft.leftVeryfy === "Verify") {
+//         $("#rootLeft1").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.left}')">${rootNodeLeft.left}</span><br/><span>${rootNodeLeft.leftName}</span>`);
+//       } else {
+//         $("#rootLeft1").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.left}')">${rootNodeLeft.left}</span><br/><span>${rootNodeLeft.leftName}</span>`);
+//       }
+//     } else {
+//       $("#rootLeft1").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//     }
+
+//     if (rootNodeLeft.right) {
+//       if (rootNodeLeft.rightVeryfy === "Verify") {
+//         $("#rootLeft2").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.right}')">${rootNodeLeft.right}</span><br/><span>${rootNodeLeft.rightName}</span>`);
+//       } else {
+//         $("#rootLeft2").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.right}')">${rootNodeLeft.right}</span><br/><span>${rootNodeLeft.rightName}</span>`);
+//       }
+//     } else {
+//       $("#rootLeft2").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//     }
+//   } else {
+//     $("#rootLeft").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//   }
+
+//   // Right branch
+//   if (rootNode.right) {
+//     if (rootNode.rightVeryfy === "Verify") {
+//       $("#rootRight").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.right}')">${rootNode.right}</span><br/><span>${rootNode.rightName}</span>`);
+//     } else {
+//       $("#rootRight").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.right}')">${rootNode.right}</span><br/><span>${rootNode.rightName}</span>`);
+//     }
+
+//     const rootNodeRight = await geonologyNode(rootNode.right);
+
+//     if (rootNodeRight.left) {
+//       if (rootNodeRight.leftVeryfy === "Verify") {
+//         $("#rootRight1").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.left}')">${rootNodeRight.left}</span><br/><span>${rootNodeRight.leftName}</span>`);
+//       } else {
+//         $("#rootRight1").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.left}')">${rootNodeRight.left}</span><br/><span>${rootNodeRight.leftName}</span>`);
+//       }
+//     } else {
+//       $("#rootRight1").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//     }
+
+//     if (rootNodeRight.right) {
+//       if (rootNodeRight.rightVeryfy === "Verify") {
+//         $("#rootRight2").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.right}')">${rootNodeRight.right}</span><br/><span>${rootNodeRight.rightName}</span>`);
+//       } else {
+//         $("#rootRight2").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.right}')">${rootNodeRight.right}</span><br/><span>${rootNodeRight.rightName}</span>`);
+//       }
+//     } else {
+//       $("#rootRight2").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//     }
+//   } else {
+//     $("#rootRight").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+//   }
+// }
+
+// async function geonologyNode(userID){
+//   var out = {};
+//   await $.post('/training/getGeonologyNode', { userID: userID }, function(data){
+//     out = {
+//       root: data.root,
+//       rootName: data.rootName,
+//       left: data.rootLeft,
+//       leftName: data.leftName,
+//       right: data.rootRight,
+//       rightName: data.rightName,
+//       rootVerify: data.rootVerify,
+//       leftVeryfy: data.leftVeryfy,
+//       rightVeryfy: data.rightVeryfy
+//     };
+//   });
+//   return out;
+// }
+
+
+// Render helper for a single node
+function renderNode(selector, id, displayName, verifyStatus) {
+  const $el = $(selector);
+  if (!id) {
+    $el.attr('class', 'node empty').html('<small>—</small>');
+    return;
+  }
+  const cls = (verifyStatus === 'Verify') ? 'node verified' : 'node not-verified';
+  // escape values to avoid XSS (minimal)
+  const safeId = String(id).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const safeName = displayName ? String(displayName).replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
+  $el.attr('class', cls).html(`<div><span style="display:block; font-weight:700;">${safeId}</span><small style="display:block; opacity:0.85;">${safeName}</small></div>`);
+}
+
+/**
+ * Build a 2-level binary tree visualization for a user.
+ * - userID: root user ID
+ */
+async function geonology(userID) {
+  // show container
+  $("#view1").css({ display: "block", "background-color": "rgb(32, 77, 77)" });
+  $("#view").css({ display: "none" });
+
+  // initial HTML structure for a 3-level binary tree (root, children, grandchildren)
   $("#view1").html(`
-    <span onclick="closingElement('view1')" style="color:red; float:right; padding: 5px; border-radius: 10px; border: 1px solid #0f0707; margin-top: 3vh;" class="badge">X</span>
-    <div style="overflow: auto; width: 70vh; text-align: center;">
-      <div class="tree">
+    <span onclick="closingElement('view1')" style="color:red; float:right; padding:5px; border-radius:10px; border:1px solid #0f0707; margin:10px;" class="badge">X</span>
+    <div style="overflow:auto; padding: 12px;">
+      <div class="tree" role="group" aria-label="Genealogy tree">
         <ul>
           <li>
-            <div id="root"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+            <div id="root" class="node empty">Loading...</div>
             <ul>
               <li>
-                <div id="rootLeft"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+                <div id="rootLeft" class="node empty">—</div>
                 <ul>
-                  <li><div id="rootLeft1"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
-                  <li><div id="rootLeft2"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+                  <li><div id="rootLeft1" class="node empty">—</div></li>
+                  <li><div id="rootLeft2" class="node empty">—</div></li>
                 </ul>
               </li>
               <li>
-                <div id="rootRight"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div>
+                <div id="rootRight" class="node empty">—</div>
                 <ul>
-                  <li><div id="rootRight1"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
-                  <li><div id="rootRight2"><i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br></div></li>
+                  <li><div id="rootRight1" class="node empty">—</div></li>
+                  <li><div id="rootRight2" class="node empty">—</div></li>
                 </ul>
               </li>
             </ul>
@@ -585,100 +734,86 @@ async function geonology(userID){
     </div>
   `);
 
-  const rootNode = await geonologyNode(userID);
+  try {
+    // fetch root node data
+    const rootNode = await geonologyNode(userID);
 
-  if (rootNode.root) {
-    if (rootNode.rootVerify === "Verify") {
-      $("#root").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.root}')">${rootNode.root}</span><br/><span>${rootNode.rootName}</span>`);
+    // render root
+    renderNode('#root', rootNode.root, rootNode.rootName, rootNode.rootVerify);
+
+    // left branch
+    if (rootNode.left) {
+      renderNode('#rootLeft', rootNode.left, rootNode.leftName, rootNode.leftVeryfy);
+      const leftNode = await geonologyNode(rootNode.left);
+      renderNode('#rootLeft1', leftNode.left, leftNode.leftName, leftNode.leftVeryfy);
+      renderNode('#rootLeft2', leftNode.right, leftNode.rightName, leftNode.rightVeryfy);
     } else {
-      $("#root").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.root}')">${rootNode.root}</span><br/><span>${rootNode.rootName}</span>`);
+      renderNode('#rootLeft', null);
+      renderNode('#rootLeft1', null);
+      renderNode('#rootLeft2', null);
     }
-  }
 
-  // Left branch
-  if (rootNode.left) {
-    if (rootNode.leftVeryfy === "Verify") {
-      $("#rootLeft").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.left}')">${rootNode.left}</span><br/><span>${rootNode.leftName}</span>`);
+    // right branch
+    if (rootNode.right) {
+      renderNode('#rootRight', rootNode.right, rootNode.rightName, rootNode.rightVeryfy);
+      const rightNode = await geonologyNode(rootNode.right);
+      renderNode('#rootRight1', rightNode.left, rightNode.leftName, rightNode.leftVeryfy);
+      renderNode('#rootRight2', rightNode.right, rightNode.rightName, rightNode.rightVeryfy);
     } else {
-      $("#rootLeft").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.left}')">${rootNode.left}</span><br/><span>${rootNode.leftName}</span>`);
+      renderNode('#rootRight', null);
+      renderNode('#rootRight1', null);
+      renderNode('#rootRight2', null);
     }
 
-    const rootNodeLeft = await geonologyNode(rootNode.left);
-
-    if (rootNodeLeft.left) {
-      if (rootNodeLeft.leftVeryfy === "Verify") {
-        $("#rootLeft1").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.left}')">${rootNodeLeft.left}</span><br/><span>${rootNodeLeft.leftName}</span>`);
-      } else {
-        $("#rootLeft1").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.left}')">${rootNodeLeft.left}</span><br/><span>${rootNodeLeft.leftName}</span>`);
+    // Attach click handlers after rendering (delegated) so clicking an id re-renders with that id as root
+    $('#view1').off('click', '.node').on('click', '.node', function (e) {
+      const idText = $(this).find('span').first().text().trim();
+      // only navigate when idText exists and it's not placeholder
+      if (idText && idText !== '—') {
+        geonology(idText);
       }
-    } else {
-      $("#rootLeft1").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
-    }
+    });
 
-    if (rootNodeLeft.right) {
-      if (rootNodeLeft.rightVeryfy === "Verify") {
-        $("#rootLeft2").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.right}')">${rootNodeLeft.right}</span><br/><span>${rootNodeLeft.rightName}</span>`);
-      } else {
-        $("#rootLeft2").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeLeft.right}')">${rootNodeLeft.right}</span><br/><span>${rootNodeLeft.rightName}</span>`);
-      }
-    } else {
-      $("#rootLeft2").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
-    }
-  } else {
-    $("#rootLeft").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
-  }
-
-  // Right branch
-  if (rootNode.right) {
-    if (rootNode.rightVeryfy === "Verify") {
-      $("#rootRight").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.right}')">${rootNode.right}</span><br/><span>${rootNode.rightName}</span>`);
-    } else {
-      $("#rootRight").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNode.right}')">${rootNode.right}</span><br/><span>${rootNode.rightName}</span>`);
-    }
-
-    const rootNodeRight = await geonologyNode(rootNode.right);
-
-    if (rootNodeRight.left) {
-      if (rootNodeRight.leftVeryfy === "Verify") {
-        $("#rootRight1").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.left}')">${rootNodeRight.left}</span><br/><span>${rootNodeRight.leftName}</span>`);
-      } else {
-        $("#rootRight1").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.left}')">${rootNodeRight.left}</span><br/><span>${rootNodeRight.leftName}</span>`);
-      }
-    } else {
-      $("#rootRight1").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
-    }
-
-    if (rootNodeRight.right) {
-      if (rootNodeRight.rightVeryfy === "Verify") {
-        $("#rootRight2").html(`<i style="color: rgb(237, 230, 8);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.right}')">${rootNodeRight.right}</span><br/><span>${rootNodeRight.rightName}</span>`);
-      } else {
-        $("#rootRight2").html(`<i style="color: rgb(203, 206, 164);" class="fa fa-user" aria-hidden="true"></i><br/><span onclick="geonology('${rootNodeRight.right}')">${rootNodeRight.right}</span><br/><span>${rootNodeRight.rightName}</span>`);
-      }
-    } else {
-      $("#rootRight2").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
-    }
-  } else {
-    $("#rootRight").html('<i style="color: rgb(36, 21, 39);" class="fa fa-user" aria-hidden="true"></i><br/>');
+  } catch (err) {
+    console.error('geonology error', err);
+    $("#view1").append(`<div class="alert alert-danger mt-3">Could not load genealogy data. Try again later.</div>`);
   }
 }
 
-async function geonologyNode(userID){
-  var out = {};
-  await $.post('/training/getGeonologyNode', { userID: userID }, function(data){
-    out = {
-      root: data.root,
-      rootName: data.rootName,
-      left: data.rootLeft,
-      leftName: data.leftName,
-      right: data.rootRight,
-      rightName: data.rightName,
-      rootVerify: data.rootVerify,
-      leftVeryfy: data.leftVeryfy,
-      rightVeryfy: data.rightVeryfy
-    };
+/**
+ * Wrapper to call backend and return a promise for node data.
+ * - returns an object with fields expected by renderNode:
+ *   { root, rootName, left, leftName, right, rightName, rootVerify, leftVeryfy, rightVeryfy }
+ */
+function geonologyNode(userID) {
+  return new Promise((resolve, reject) => {
+    if (!userID) {
+      resolve({});
+      return;
+    }
+    $.post('/training/getGeonologyNode', { userID: userID })
+      .done(function (data) {
+        // default safe mapping if fields missing
+        const out = {
+          root: data.root || null,
+          rootName: data.rootName || '',
+          left: data.rootLeft || null,
+          leftName: data.leftName || '',
+          right: data.rootRight || null,
+          rightName: data.rightName || '',
+          rootVerify: data.rootVerify || '',
+          leftVeryfy: data.leftVeryfy || '',
+          rightVeryfy: data.rightVeryfy || ''
+        };
+        resolve(out);
+      })
+      .fail(function (jqXHR, textStatus, err) {
+        console.error('geonologyNode AJAX error', textStatus, err);
+        reject(err || textStatus);
+      });
   });
-  return out;
 }
+
 
 function wellcomLetter(userID){
   $("#view1").css({"display":"block" , "background-color": "rgb(32, 77, 77)"});
