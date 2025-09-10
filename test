@@ -52,3 +52,11 @@ const axios = require('axios');
 cron.schedule('0 0 * * *', async () => { // Every day at midnight
   await axios.get('https://yourdomain.com/api/daily-profit');
 });
+
+
+
+
+
+modify My Team Details as:
+create all left side  and all right list with verify and non verify 
+in all list show name, userID 

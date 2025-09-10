@@ -15,6 +15,40 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
+
+  .navbar-toggler {
+    border: none;
+  }
+
+  .navbar-toggler .navbar-toggler-icon {
+    width: 1.6rem;
+    height: 1.2rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='%23f4f6f8' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+  }
+
+  /* optional: improve focus visibility of toggler for keyboard users */
+  .navbar-toggler:focus {
+    outline: 3px solid rgba(32,228,127,0.14);
+    outline-offset: 3px;
+    box-shadow: none;
+  }
+
+  /* ensure nav links remain light on dark background */
+  #topnav .nav-link,
+  #topnav .navbar-brand img {
+    color: #f4f6f8 !important;
+  }
+
+  /* remove default blue focus for bootstrap links and make it subtle */
+  #topnav .nav-link:focus {
+    outline: 3px solid rgba(32,228,127,0.12);
+    outline-offset: 3px;
+  }
+
+
       :root{
         --bg: #062b2b;
         --panel: #0f3a3a;
@@ -23,6 +57,12 @@
         --card: rgba(255,255,255,0.03);
         --glass: rgba(255,255,255,0.02);
         --brand: #ffd166;
+
+          --tree-line: rgba(255,255,255,0.10); /* connector color (light) */
+  --node-bg: rgba(255,255,255,0.02);
+  --node-border: rgba(255,255,255,0.06);
+  --verified-bg-start: #fff8dd;
+  --verified-bg-end:   #ffd43a;
       }
 
       html,body{
@@ -83,97 +123,173 @@
 
       /* tree */
 /* Binary genealogy tree layout + node styles */
-.tree {
-  display: inline-block;
-  margin: 0 auto;
-  text-align: center;
+/* Genealogy tree — modern, animated, responsive */
+.tree-wrapper {
+  width: 100%;
   overflow-x: auto;
-  padding: 12px 8px;
-}
-
-.tree ul {
-  padding-top: 20px;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px;
   display: flex;
   justify-content: center;
-  gap: 28px;
-  margin: 0;
 }
 
+/* core tree layout */
+.tree {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  transform-origin: top center;
+  transition: transform 240ms ease;
+}
+
+/* top-level children (horizontal row) */
+.tree > ul {
+  display: flex;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: flex-start;
+}
+
+/* grandchildren rows */
+.tree ul ul {
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding-top: 18px;
+  list-style: none;
+  position: relative; /* important for the vertical connector */
+}
+
+/* LI wrapper */
 .tree li {
   list-style: none;
   position: relative;
-  padding-top: 0;
   text-align: center;
   min-width: 120px;
+  padding-top: 8px; /* space for connectors */
 }
 
-/* connecting lines */
-.tree li::before,
-.tree li::after {
+/* --- CONNECTORS: only render when node has children (JS sets .has-children) --- */
+/* horizontal connectors from parent to children */
+.tree li.has-children::before,
+.tree li.has-children::after {
   content: "";
   position: absolute;
-  top: 0;
-  height: 16px;
+  top: -12px;
   width: 50%;
-  border-top: 2px solid rgba(255,255,255,0.08);
+  height: 12px;
+  border-top: 1.5px solid var(--tree-line);
+  transition: border-color .18s ease, opacity .18s ease;
+  opacity: 1;
+  box-sizing: border-box;
 }
-.tree li::before { right: 50%; }
-.tree li::after { left: 50%; }
+.tree li.has-children::before { right: 50%; }
+.tree li.has-children::after  { left: 50%; }
 
-.tree li:only-child::before,
-.tree li:only-child::after { display: none; }
+/* hide connectors for single-child parent (avoid stray half-line) */
+.tree li:only-child.has-children::before,
+.tree li:only-child.has-children::after { display: none; }
+
+/* vertical connector down to nested UL (children row) */
 .tree ul ul::before {
   content: "";
   position: absolute;
-  top: -16px;
+  top: -28px;
   left: 50%;
-  border-left: 2px solid rgba(255,255,255,0.08);
-  height: 16px;
+  transform: translateX(-50%);
+  border-left: 1.5px solid var(--tree-line);
+  height: 28px;
+  transition: border-color .18s ease, opacity .18s ease;
+  opacity: 1;
+  box-sizing: border-box;
 }
 
-/* node wrapper */
+/* if nested UL is empty, hide vertical */
+.tree ul ul:empty::before { display: none; }
+
+/* slight highlight on hover for connectors */
+.tree li.has-children:hover::before,
+.tree li.has-children:hover::after,
+.tree li.has-children:hover ul::before {
+  border-color: rgba(255,255,255,0.16);
+}
+
+/* Node boxes */
 .tree .node {
   display: inline-block;
-  padding: 10px 8px;
-  border-radius: 8px;
+  padding: 10px 10px;
+  border-radius: 10px;
   min-width: 120px;
   box-sizing: border-box;
   cursor: pointer;
   font-weight: 600;
-  line-height: 1.1;
   user-select: none;
-  border: 2px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
+  border: 2px solid var(--node-border);
+  background: var(--node-bg);
   color: #eef5ef;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  text-align: center;
+  line-height: 1.1;
+  position: relative;
+  overflow: hidden;
+  outline: none;
 }
+
+/* subtle pop-in when class "pop" applied */
+@keyframes popIn {
+  from { transform: translateY(8px) scale(.98); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+.tree .node.pop { animation: popIn .36s cubic-bezier(.2,.9,.2,1) both; }
+
+/* hover / active */
+.tree .node:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 30px rgba(2,8,8,0.55); }
+.tree .node:active { transform: translateY(-2px) scale(.995); }
 
 /* Verified (gold) */
 .tree .node.verified {
-  background: linear-gradient(180deg,#fff6d0,#ffd700);
+  background: linear-gradient(180deg, var(--verified-bg-start), var(--verified-bg-end));
   color: #111;
   border-color: #e6c200;
-  box-shadow: 0 6px 18px rgba(230,194,0,0.12);
+  box-shadow: 0 10px 26px rgba(230,194,0,0.12);
 }
 
-/* Not Verified (muted) */
+/* Not verified (muted) */
 .tree .node.not-verified {
-  background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(255,255,255,0.02));
-  color: #e6eef0;
-  border-color: rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  color: #eaf6f3;
+  border-color: var(--node-border);
 }
 
-/* placeholder empty node */
+/* Placeholder / empty nodes */
 .tree .node.empty {
-  background: transparent;
+  background: rgba(255,255,255,0.01);
   border: 2px dashed rgba(255,255,255,0.04);
   color: rgba(255,255,255,0.45);
   font-weight: 500;
 }
 
-/* responsive */
+/* compact text inside node */
+.node .uid { display:block; font-size: .98rem; font-weight:700; color: inherit; }
+.node .name { display:block; font-size: .85rem; color: rgba(0,0,0,0.65); margin-top:6px; }
+
+/* focus accessibility */
+.node:focus { outline: 3px solid rgba(32,228,127,0.14); outline-offset: 3px; }
+
+/* small-screen adjustments */
 @media (max-width: 880px) {
-  .tree ul { gap: 12px; }
-  .tree .node { min-width: 90px; font-size: 12px; padding: 8px 6px; }
+  .tree ul { gap: 14px; }
+  .tree ul ul { gap: 10px; padding-top: 12px; }
+  .tree .node { min-width: 86px; padding: 8px 6px; font-size: 13px; border-radius: 8px; }
+  .node .uid { font-size: .88rem; }
+  .node .name { font-size: .72rem; }
+  /* slightly thinner connectors on small screens */
+  .tree li.has-children::before,
+  .tree li.has-children::after { height: 10px; top: -10px; border-top-width: 1px; }
+  .tree ul ul::before { height: 20px; top: -20px; border-left-width: 1px; }
 }
 
 
@@ -211,21 +327,18 @@
 
     <!-- header / navbar -->
     <header>
-      <nav id="topnav" class="navbar fixed-top navbar-expand-lg">
+     <nav id="topnav" class="navbar fixed-top navbar-expand-lg">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#"><img src="/images/logo/logo.png" alt="Logo"></a>
+          <a class="navbar-brand" href="#"><img src="/images/logo/logo.png" alt="Logo" style="height:38px;"></a>
 
-          <button class="navbar-toggler btn btn-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
+          <button class="navbar-toggler btn btn-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon" aria-hidden="true"></span>
           </button>
 
           <div class="collapse navbar-collapse" id="navMenu">
             <ul class="navbar-nav ms-auto align-items-lg-center">
               <li class="nav-item"><a class="nav-link" href="#view">Home</a></li>
-              <li class="nav-item"><a class="nav-link" href="#courses">Courses</a></li>
-              <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-              <li class="nav-item"><a id="logout" onclick="logout()" style="display:none; cursor:pointer;" class="nav-link">Logout</a></li>
-              <li class="nav-item"><a class="btn btn-outline-light ms-3" href="/training">Training</a></li>
+              <li onclick="logout()" class="nav-item"><a class="nav-link">Logout</a></li>
             </ul>
           </div>
         </div>
@@ -233,7 +346,7 @@
     </header>
 
     <!-- top background spacer -->
-    <div id="topBackground" style="height: 12vh;"></div>
+    <div id="topBackground" style="height: 12vh; display: none;"></div>
 
     <!-- main view container -->
     <div id="view" class="container-fluid" style="margin-top: 1rem; color:#eef4ef;">

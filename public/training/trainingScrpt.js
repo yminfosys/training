@@ -57,7 +57,7 @@ function loginClick() {
           </div>
         </div>
 
-        <p class="text-center muted-small">Don't have an account? <a href="javascript:void(0)" onclick="regClick('','')">Register</a></p>
+       
       </div>
     </div>
   `);
@@ -426,14 +426,14 @@ function viewmenu(userID, active){
         </div>
       </div>
 
-      <div class="col-4 mb-3">
-        <div class="card">
-          <div class="card-body" style="height: 11vh; background-image: linear-gradient(#FFD700,#dc6714bd); color: #6617dc; text-align: center;">
-            <span><i style="font-size: 25px;" class="fa fa-yelp" aria-hidden="true"></i></span>
-            <p class="card-text text-center" style="font-size:small; font-weight: bold;">My Team Details</p>
-          </div>
+     <div class="col-4 mb-3">
+      <div class="card" onclick="myTeamDetailsAll('${userID}')">
+        <div class="card-body" style="height: 11vh; background-image: linear-gradient(#FFD700,#dc6714bd); color: #6617dc; text-align: center; cursor: pointer;">
+          <span><i style="font-size: 25px;" class="fa fa-yelp" aria-hidden="true"></i></span>
+          <p class="card-text text-center" style="font-size:small; font-weight: bold;">My Team Details</p>
         </div>
       </div>
+    </div>
 
       <div class="col-4 mb-3">
         <div class="card" onclick="groupTrade('${userID}')">
@@ -681,18 +681,56 @@ function createReferral(userID){
 // }
 
 
+// call this once after the tree markup is present in DOM
+function enhanceTree(treeRootSelector = '.tree') {
+  const treeRoot = document.querySelector(treeRootSelector);
+  if (!treeRoot) return;
+
+  // mark li that have child ULs
+  treeRoot.querySelectorAll('li').forEach(li => {
+    if (li.querySelector('ul')) {
+      li.classList.add('has-children');
+    } else {
+      li.classList.remove('has-children');
+    }
+  });
+
+  // add pop animation briefly to nodes
+  treeRoot.querySelectorAll('.node').forEach((node, idx) => {
+    node.classList.remove('pop');
+    // stagger effect
+    setTimeout(() => node.classList.add('pop'), idx * 40);
+  });
+}
+
 // Render helper for a single node
-function renderNode(selector, id, displayName, verifyStatus) {
+function renderNode(selector, uid, displayName = '', verifyFlag = '') {
   const $el = $(selector);
-  if (!id) {
-    $el.attr('class', 'node empty').html('<small>—</small>');
+  $el.removeClass('verified not-verified empty pop').empty();
+
+  if (!uid) {
+    // placeholder / empty node
+    $el.addClass('node empty').html('&mdash;');
     return;
   }
-  const cls = (verifyStatus === 'Verify') ? 'node verified' : 'node not-verified';
-  // escape values to avoid XSS (minimal)
-  const safeId = String(id).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const safeName = displayName ? String(displayName).replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
-  $el.attr('class', cls).html(`<div><span style="display:block; font-weight:700;">${safeId}</span><small style="display:block; opacity:0.85;">${safeName}</small></div>`);
+
+  const verified = (String(verifyFlag).toLowerCase() === 'verify');
+  const classes = 'node ' + (verified ? 'verified' : 'not-verified');
+
+  const inner = `
+    <div class="${classes}" tabindex="0" role="button" aria-pressed="false" data-uid="${uid}">
+      <span class="uid">${uid}</span>
+      <span class="name">${displayName || ''}</span>
+    </div>
+  `;
+  $el.html(inner);
+
+  // small pop animation
+  const $node = $el.find('.node').first();
+  // remove previous pop class then reflow to retrigger animation
+  $node.removeClass('pop');
+  void $node[0].offsetWidth;
+  $node.addClass('pop');
 }
 
 /**
@@ -700,50 +738,55 @@ function renderNode(selector, id, displayName, verifyStatus) {
  * - userID: root user ID
  */
 async function geonology(userID) {
-  // show container
-  $("#view1").css({ display: "block", "background-color": "rgb(32, 77, 77)" });
-  $("#view").css({ display: "none" });
+  try {
+    // show container
+    $('#view1').css({ display: 'block', 'background-color': 'rgb(32, 77, 77)' });
+    $('#view').css({ display: 'none' });
 
-  // initial HTML structure for a 3-level binary tree (root, children, grandchildren)
-  $("#view1").html(`
-    <span onclick="closingElement('view1')" style="color:red; float:right; padding:5px; border-radius:10px; border:1px solid #0f0707; margin:10px;" class="badge">X</span>
-    <div style="overflow:auto; padding: 12px;">
-      <div class="tree" role="group" aria-label="Genealogy tree">
+    // initial skeleton
+    $('#view1').html(`
+      <span onclick="closingElement('view1')" style="color:red; float:right; padding:5px; border-radius:10px; border:1px solid #0f0707; margin:10px;" class="badge">X</span>
+      <div class="tree-wrapper">
+  <div class="tree">
+    <ul>
+      <li>
+        <div id="root" class="node verified"><span class="uid">RR-5010</span><span class="name">Alice</span></div>
         <ul>
           <li>
-            <div id="root" class="node empty">Loading...</div>
+            <div id="rootLeft" class="node not-verified"><span class="uid">RR-4001</span><span class="name">Bob</span></div>
             <ul>
-              <li>
-                <div id="rootLeft" class="node empty">—</div>
-                <ul>
-                  <li><div id="rootLeft1" class="node empty">—</div></li>
-                  <li><div id="rootLeft2" class="node empty">—</div></li>
-                </ul>
-              </li>
-              <li>
-                <div id="rootRight" class="node empty">—</div>
-                <ul>
-                  <li><div id="rootRight1" class="node empty">—</div></li>
-                  <li><div id="rootRight2" class="node empty">—</div></li>
-                </ul>
-              </li>
+              <li><div id="rootLeft1" class="node empty">—</div></li>
+              <li><div id="rootLeft2" class="node empty">—</div></li>
             </ul>
           </li>
-        </ul>
-      </div>
-    </div>
-  `);
 
-  try {
-    // fetch root node data
+          <li>
+            <div id="rootRight" class="node verified"><span class="uid">RR-4022</span><span class="name">Cara</span></div>
+            <ul>
+              <li><div id="rootRight1" class="node empty">—</div></li>
+              <li><div id="rootRight2" class="node empty">—</div></li>
+            </ul>
+          </li>
+
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- after DOM injection -->
+<script>enhanceTree('.tree');</script>
+    `);
+
+    // fetch root and populate
     const rootNode = await geonologyNode(userID);
 
-    // render root
+    // top root
     renderNode('#root', rootNode.root, rootNode.rootName, rootNode.rootVerify);
 
     // left branch
     if (rootNode.left) {
       renderNode('#rootLeft', rootNode.left, rootNode.leftName, rootNode.leftVeryfy);
+      // fetch left child details (grandchildren)
       const leftNode = await geonologyNode(rootNode.left);
       renderNode('#rootLeft1', leftNode.left, leftNode.leftName, leftNode.leftVeryfy);
       renderNode('#rootLeft2', leftNode.right, leftNode.rightName, leftNode.rightVeryfy);
@@ -765,18 +808,31 @@ async function geonology(userID) {
       renderNode('#rootRight2', null);
     }
 
-    // Attach click handlers after rendering (delegated) so clicking an id re-renders with that id as root
+    // delegated click handler: click any .node and drill down using the data-uid
     $('#view1').off('click', '.node').on('click', '.node', function (e) {
-      const idText = $(this).find('span').first().text().trim();
-      // only navigate when idText exists and it's not placeholder
-      if (idText && idText !== '—') {
-        geonology(idText);
+      const uid = $(this).data('uid');
+      if (uid) {
+        // small UX: scroll tree wrapper to center the clicked node (if wide)
+        setTimeout(() => {
+          const $wrap = $('.tree-wrapper').first();
+          const offsetEl = $(this).closest('.node');
+          if ($wrap.length && offsetEl.length) {
+            const wrapLeft = $wrap.offset().left;
+            const wrapWidth = $wrap.outerWidth();
+            const elLeft = offsetEl.offset().left;
+            const elWidth = offsetEl.outerWidth();
+            const scrollTo = $wrap.scrollLeft() + (elLeft - wrapLeft) - (wrapWidth / 2) + (elWidth / 2);
+            $wrap.animate({ scrollLeft: scrollTo }, 300);
+          }
+        }, 40);
+
+        geonology(uid);
       }
     });
 
   } catch (err) {
     console.error('geonology error', err);
-    $("#view1").append(`<div class="alert alert-danger mt-3">Could not load genealogy data. Try again later.</div>`);
+    $('#view1').append(`<div class="alert alert-danger mt-3">Could not load genealogy data. Try again later.</div>`);
   }
 }
 
@@ -1157,4 +1213,138 @@ function changePasswordinit(userID){
     if(res && res.ok) alert("Password changed");
     else alert("Could not change password");
   });
+}
+
+
+/**
+ * Fetch and render full team details (BFS up to maxDepth)
+ * Uses existing /mydirect endpoint (returns verified directs and list)
+ */
+/**
+ * Fetch and render My Team Details (split into Left and Right)
+ * Shows both Verified ✅ and Not Verified ❌ users with Name + UserID
+ */
+/**
+ * Render ALL left-side and right-side members (verified + not verified)
+ * Displays Name and UserID for each member, grouped by side and verification status.
+ */
+/**
+ * Render ALL left-side and right-side members (verified + not verified)
+ * Shows Name, Activation Date, and UserID.
+ * At top: total verified / not verified counts.
+ */
+async function myTeamDetailsAll(rootUserID) {
+  if (!rootUserID) return alert('User ID missing');
+
+  // show overlay
+  $('#view1').css({ display: 'block', 'background-color': 'rgb(32, 77, 77)' });
+  $('#view').css({ display: 'none' });
+
+  $('#view1').html(`
+    <div class="card m-2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-0">My Team Details — All Members</h5>
+          <small class="small">Left and Right subtrees (verified & not verified)</small>
+        </div>
+        <div>
+          <button style="color: #041b1b;" class="btn btn-sm btn-outline-light small" onclick="closingElement('view1')">Close</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="team-loading" class="text-center my-3">
+          <img src="/images/gif/circle.gif" alt="loading" style="width:80px"/><br/>
+          <small class="small">Loading team members...</small>
+        </div>
+        <div id="team-container" style="display:none"></div>
+      </div>
+    </div>
+  `);
+
+  try {
+    // fetch all members
+    const resp = await $.post('/training/getTeamMembersAll', { userID: rootUserID });
+    $('#team-loading').hide();
+    $('#team-container').show();
+
+    const left = Array.isArray(resp.left) ? resp.left : [];
+    const right = Array.isArray(resp.right) ? resp.right : [];
+
+    function renderSideList(sideName, items) {
+      const verified = items.filter(i => String(i.varyficatinStatus).toLowerCase() === 'verify');
+      const notVerified = items.filter(i => String(i.varyficatinStatus).toLowerCase() !== 'verify');
+
+      const renderItems = arr => {
+        if (!arr.length) return `<li class="list-group-item muted-small">No members</li>`;
+        return arr.map(u => {
+          const date = u.activationDate ? dateFormat(new Date(u.activationDate), "d") : dateFormat(new Date(u.regdate), "d");
+          return `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <div><strong>${escapeHtml(u.userName || '—')}</strong></div>
+                <small class="small">ID: ${escapeHtml(u.userID || '—')} | Date: ${date}</small>
+              </div>
+              <div>
+                ${String(u.varyficatinStatus).toLowerCase() === 'verify'
+                  ? '<span class="badge bg-success">Verified</span>'
+                  : '<span class="badge bg-secondary">Not Verified</span>'}
+              </div>
+            </li>
+          `;
+        }).join('');
+      };
+
+      return `
+        <div class="mb-3">
+          <h6 class="mb-2 text-center">${sideName} Side</h6>
+          <p class="text-center">
+            <span class="badge bg-success">Verified: ${verified.length}</span>
+            <span class="badge bg-secondary ms-2">Not Verified: ${notVerified.length}</span>
+            <span class="badge bg-info ms-2">Total: ${items.length}</span>
+          </p>
+          <h6 class="mt-3">Verified Members</h6>
+          <ul class="list-group mb-3">${renderItems(verified)}</ul>
+          <h6>Not Verified Members</h6>
+          <ul class="list-group">${renderItems(notVerified)}</ul>
+        </div>
+      `;
+    }
+
+    // final layout
+    const html = `
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <div class="card custom h-100">
+            <div class="card-body" style="color: #041b1b;">
+              ${renderSideList("⬅️ Left", left)}
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+          <div class="card custom h-100">
+            <div class="card-body" style="color: #041b1b;">
+              ${renderSideList("➡️ Right", right)}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    $('#team-container').html(html);
+
+  } catch (err) {
+    console.error('myTeamDetailsAll error', err);
+    $('#team-loading').hide();
+    $('#team-container').show().html(`<div class="alert alert-danger">Failed to load team. Try again later.</div>`);
+  }
+}
+
+/* escape helper */
+function escapeHtml(str) {
+  if (!str && str !== 0) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

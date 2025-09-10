@@ -311,6 +311,53 @@ router.post('/mydirect', async function(req, res, next) {
 
 
 
+// POST /training/getTeamMembersAll
+// Returns all members under the user's left subtree and right subtree
+router.post('/getTeamMembersAll', async function(req, res, next) {
+  try {
+    const { userID } = req.body;
+    if (!userID) return res.status(400).json({ message: 'userID required' });
+
+    await dbCon.connectDB();
+
+    const user = await db.traininguser.findOne({ userID }).lean();
+    if (!user) {
+      await dbCon.closeDB();
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Build regex for left/right subtrees
+    const leftRegex = new RegExp('.*' + user.rootID + '-1.*', 'i');
+    const rightRegex = new RegExp('.*' + user.rootID + '-2.*', 'i');
+
+    // Fetch left members with extra fields
+    const leftMembers = await db.traininguser.find(
+      { rootID: { $regex: leftRegex } },
+      { userName: 1, userID: 1, varyficatinStatus: 1, parentSide: 1, activationDate: 1, regdate: 1 }
+    ).lean();
+
+    // Fetch right members with extra fields
+    const rightMembers = await db.traininguser.find(
+      { rootID: { $regex: rightRegex } },
+      { userName: 1, userID: 1, varyficatinStatus: 1, parentSide: 1, activationDate: 1, regdate: 1 }
+    ).lean();
+
+    await dbCon.closeDB();
+
+    res.json({
+      left: leftMembers || [],
+      right: rightMembers || []
+    });
+  } catch (err) {
+    console.error('getTeamMembersAll error', err);
+    try { await dbCon.closeDB(); } catch(e){}
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
   
 
   // POST route to handle ECS mandate submission

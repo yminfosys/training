@@ -48,6 +48,16 @@
   .nav-link { color: var(--light) !important; }
   .nav-link:hover { color: var(--accent) !important; }
 
+  /* make toggle button icon white */
+.navbar-toggler {
+  border: none; /* optional: remove border */
+}
+
+.navbar-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+
   /* HERO */
   .hero-section{padding-top:80px;padding-bottom:48px;}
   .lead { color: var(--muted); font-size:1.03rem; }
@@ -81,6 +91,7 @@
   /* Accessibility focus ring */
   a:focus, button:focus, input:focus { outline: 3px solid rgba(32,228,127,0.12); outline-offset: 3px; }
 
+
   /* Responsive tweaks */
   @media (max-width:767px) {
     .hero-section { padding-top:92px; }
@@ -94,7 +105,7 @@
   <!-- NAV -->
   <nav class="navbar navbar-expand-lg nav-bg fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="https://ricirova.co.uk"><img src="/images/logo/logo.png" alt="Richrova"></a>
+      <a class="navbar-brand" href="https://richrova.co.uk"><img src="/images/logo/logo.png" alt="Richrova"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -121,10 +132,10 @@
         <div class="d-flex gap-2 mt-3 flex-wrap">
           <a class="btn btn-primary btn-lg" href="#pricing">See Pricing</a>
           <a class="btn btn-outline-light btn-lg" href="#courses">View Courses</a>
-          <a class="btn btn-dark btn-lg" href="/training">training</a>
+          <a class="btn btn-dark btn-lg" href="/training">Training</a>
         </div>
 
-        <p class="small mt-3" style="color:var(--muted);">Head office: 34 Turner Street, London, E1 2AS • Email: <a href="mailto:info@richrova.co.uk">info@richrova.co.uk</a> • <a href="https://ricirova.co.uk">ricirova.co.uk</a></p>
+        <p class="small mt-3" style="color:var(--muted);">Head office: 34 Turner Street, London, E1 2AS • Email: <a href="mailto:info@richrova.co.uk">info@richrova.co.uk</a> • <a href="https://richrova.co.uk">richrova.co.uk</a></p>
       </div>
 
       <div class="col-lg-5 d-none d-lg-block">
@@ -279,7 +290,7 @@
                 <h3 class="h6 fw-bold mb-1">P2P Master</h3>
                 <div class="small" style="color:var(--muted)">One-time • 8 weeks</div>
               </div>
-              <div style="font-weight:800; color:var(--accent)">₹9,999</div>
+              <div style="font-weight:800; color:var(--accent)"> £ 299</div>
             </div>
 
             <ul class="plan-features mt-3 mb-3">
@@ -299,7 +310,7 @@
                 <h3 class="h6 fw-bold mb-1">Blockchain Engineering</h3>
                 <div class="small" style="color:var(--muted)">One-time • 10 weeks</div>
               </div>
-              <div style="font-weight:800; color:var(--accent)">₹11,999</div>
+              <div style="font-weight:800; color:var(--accent)">&nbsp;£ 399</div>
             </div>
 
             <ul class="plan-features mt-3 mb-3">
@@ -319,7 +330,7 @@
                 <h3 class="h6 fw-bold mb-1">Stock Market Pro</h3>
                 <div class="small" style="color:var(--muted)">One-time • 10 weeks</div>
               </div>
-              <div style="font-weight:800; color:var(--accent)">₹12,999</div>
+              <div style="font-weight:800; color:var(--accent)"> £ 499</div>
             </div>
 
             <ul class="plan-features mt-3 mb-3">
@@ -328,7 +339,7 @@
               <li>✔ Live trading review</li>
             </ul>
 
-            <a href="/training" class="btn btn-primary mt-auto">Open /training</a>
+            <a href="/training" class="btn btn-primary mt-auto">Open / Training</a>
           </div>
         </div>
       </div>
@@ -499,7 +510,7 @@
             <h3 class="h6 fw-bold">Richrova — Head Office (UK)</h3>
             <p class="small mb-1"><i class="fa fa-map-marker" style="color:var(--accent); margin-right:.5rem"></i>34 Turner Street, London, E1 2AS, United Kingdom</p>
             <p class="small mb-1"><i class="fa fa-envelope" style="color:var(--accent); margin-right:.5rem"></i><a href="mailto:info@richrova.co.uk">info@richrova.co.uk</a></p>
-            <p class="small mb-0"><i class="fa fa-globe" style="color:var(--accent); margin-right:.5rem"></i><a href="https://ricirova.co.uk">https://ricirova.co.uk</a></p>
+            <p class="small mb-0"><i class="fa fa-globe" style="color:var(--accent); margin-right:.5rem"></i><a href="https://richrova.co.uk">https://richrova.co.uk</a></p>
           </div>
         </div>
 
@@ -532,7 +543,7 @@
         <div class="small">P2P • Blockchain • Stock Market • Banking</div>
       </div>
 
-      <div class="small text-muted">&copy; <span id="year"></span> Richrova — All rights reserved</div>
+      <div class="small">&copy; <span id="year"></span> Richrova — All rights reserved</div>
     </div>
   </footer>
 
